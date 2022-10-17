@@ -12,8 +12,7 @@
 #### Dn для DC1 = 0 – 7, где 
 * 0 - loopback
 * 1 – p2p links
-* 2-3 - reserved
-* 4-7 – services
+* 2-3 - services
 ### Адресация
 #### Spine 1
 * 10.0.1.1/32 loopback1
@@ -51,4 +50,4 @@
 * 10.0.104.2/32 loopback2
 * 10.1.3.1/31 p2p spine1
 
-10.4.0.0/14 - services
+10.2.0.0/15 - services
