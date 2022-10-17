@@ -23,14 +23,14 @@
 * 10.3.1.2/31 p2p leaf2
 * 10.3.1.4/31 p2p leaf3
 #### Spine 2
-* 10.1.2.1/32 loopback1
-* 10.2.2.1/32 loopback2
+* 10.1.2.2/32 loopback1
+* 10.2.2.2/32 loopback2
 * 10.3.2.0/31 p2p leaf1
 * 10.3.2.2/31 p2p leaf2
 * 10.3.2.4/31 p2p leaf3
 #### Spine 3
-* 10.1.3.1/32 loopback1
-* 10.2.3.1/32 loopback2
+* 10.1.3.3/32 loopback1
+* 10.2.3.3/32 loopback2
 * 10.3.3.0/31 p2p leaf4
 #### Leaf 1
 * 10.1.1.101/32 loopback1
