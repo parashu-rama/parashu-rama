@@ -33,7 +33,7 @@
 * 10.1.3.0/31 p2p leaf4
 #### Leaf 1
 * 10.0.101.1/32 loopback1
-* 10.0.101.1/32 loopback2
+* 10.0.101.2/32 loopback2
 * 10.1.1.1/31 p2p spine1
 * 10.1.2.1/31 p2p spine2
 #### Leaf 2
