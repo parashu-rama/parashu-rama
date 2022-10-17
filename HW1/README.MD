@@ -9,7 +9,7 @@
 * Dn – номер ЦОДа,
 * Sn – 1-100 spine, 101-255 leaf
 * X – 1-2 для loopback, для p2p по порядку
-#### Dn для DC1 = 0 – 7, где 
+#### Dn для DC1 = 0 – 3, где 
 * 0 - loopback
 * 1 – p2p links
 * 2-3 - services
