@@ -8,7 +8,7 @@
 #### IP = 10.Dn.Sn.X/31, где:
 * Dn – номер ЦОДа,
 * Sn – номер spine,
-* X – 1-100 spine, 101-255 leaf для loopback, для p2p по порядку
+* X – 1-100 spine 101-255 leaf для loopback, для p2p по порядку
 #### Dn для DC1 = 0 – 7, где 
 * 0 - reserved
 * 1 – loopback1
