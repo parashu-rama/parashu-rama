@@ -13,4 +13,5 @@
 * 0 – loopback1
 * 1 – loopback2
 * 2 – p2p links
-* 3 – reserved 4-7 – services
+* 3 – reserved
+* 4-7 – services
