@@ -3,30 +3,30 @@
 ![Схема сети](net.png "Схема сети")
 ### Конфигурация
 #### Spine 1  
-  feature ospf
-  interface Ethernet1/1
-    no switchport
-    ip address 10.1.1.0/31
-    ip ospf network point-to-point
-    ip router ospf UNDERLAY area 0.0.0.0
-    no shutdown
-  interface Ethernet1/2
-    no switchport
-    ip address 10.1.1.2/31
-    ip ospf network point-to-point
-    ip router ospf UNDERLAY area 0.0.0.0
-    no shutdown
-  interface Ethernet1/3
-    no switchport
-    ip address 10.1.1.4/31
-    ip ospf network point-to-point
-    ip router ospf UNDERLAY area 0.0.0.0
-    no shutdown
-  interface loopback1
-    ip address 10.0.1.1/32
-    ip router ospf UNDERLAY area 0.0.0.0
-  router ospf UNDERLAY
-    router-id 10.0.1.1
+    feature ospf
+    interface Ethernet1/1
+      no switchport
+      ip address 10.1.1.0/31
+      ip ospf network point-to-point
+      ip router ospf UNDERLAY area 0.0.0.0
+      no shutdown
+    interface Ethernet1/2
+      no switchport
+      ip address 10.1.1.2/31
+      ip ospf network point-to-point
+      ip router ospf UNDERLAY area 0.0.0.0
+      no shutdown
+    interface Ethernet1/3
+      no switchport
+      ip address 10.1.1.4/31
+      ip ospf network point-to-point
+      ip router ospf UNDERLAY area 0.0.0.0
+      no shutdown
+    interface loopback1
+      ip address 10.0.1.1/32
+      ip router ospf UNDERLAY area 0.0.0.0
+    router ospf UNDERLAY
+      router-id 10.0.1.1
 #### Spine 2
 * 10.0.2.1/32 loopback1
 * 10.0.2.2/32 loopback2
