@@ -1,26 +1,34 @@
 # Лабораторная работа 1
 ## OSPF underlay
 ![Схема сети](net.png "Схема сети")
-### Area 0.0.0.0
-### IP plan
-#### Маски:
-* p2p - /31
-* loopback - /32
-#### IP = 10.Dn.Sn.X/31, где:
-* Dn – номер ЦОДа,
-* Sn – 1-100 spine, 101-255 leaf
-* X – 1-2 для loopback, для p2p по порядку
-#### Dn для DC1 = 0 – 3, где 
-* 0 - loopback
-* 1 – p2p links
-* 2-3 - services
-### Адресация
+### Конфигурация
 #### Spine 1
-* 10.0.1.1/32 loopback1
-* 10.0.1.2/32 loopback2
-* 10.1.1.0/31 p2p leaf1
-* 10.1.1.2/31 p2p leaf2
-* 10.1.1.4/31 p2p leaf3
+  
+feature ospf
+interface Ethernet1/1
+  no switchport
+  ip address 10.1.1.0/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+interface Ethernet1/2
+  no switchport
+  ip address 10.1.1.2/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+interface Ethernet1/3
+  no switchport
+  ip address 10.1.1.4/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+interface loopback1
+  ip address 10.0.1.1/32
+  ip router ospf UNDERLAY area 0.0.0.0
+router ospf UNDERLAY
+  router-id 10.0.1.1
+  
 #### Spine 2
 * 10.0.2.1/32 loopback1
 * 10.0.2.2/32 loopback2
