@@ -1,111 +1,72 @@
 # Лабораторная работа 2
 ## ISIS underlay
 ![Схема сети](net.png "Схема сети")
+### Схема ISIS
+Level2 зарезервирован для superspine bkb связи между цод.
+Формат net 49.aaaa.xxxx.yyyy.zzzz.00
+* aaaa - Area number
+* xxxx - DC number
+* yyyy - spine number
+* zzzz - leaf number
 ### Конфигурация
 #### Spine 1
-    feature ospf
+    feature isis
     interface Ethernet1/1
-      no switchport
-      ip address 10.1.1.0/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
+      isis circuit-type level-1
+      ip router isis underlay
     interface Ethernet1/2
-      no switchport
-      ip address 10.1.1.2/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
+      isis circuit-type level-1
+      ip router isis underlay
     interface Ethernet1/3
-      no switchport
-      ip address 10.1.1.4/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
-    interface loopback1
-      ip address 10.0.1.1/32
-      ip router ospf UNDERLAY area 0.0.0.0
-    router ospf UNDERLAY
-      router-id 10.0.1.1   
+      isis circuit-type level-1
+      ip router isis underlay
+    router isis underlay
+      net 49.0001.0001.0001.0000.00
+      is-type level-1  
 #### Spine 2
-    feature ospf
+    feature isis
     interface Ethernet1/1
-      no switchport
-      ip address 10.1.2.0/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
+      isis circuit-type level-1
+      ip router isis underlay
     interface Ethernet1/2
-      no switchport
-      ip address 10.1.2.2/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
+      isis circuit-type level-1
+      ip router isis underlay
     interface Ethernet1/3
-      no switchport
-      ip address 10.1.2.4/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
-    interface loopback1
-      ip address 10.0.2.1/32
-      ip router ospf UNDERLAY area 0.0.0.0
-    router ospf UNDERLAY
-      router-id 10.0.2.1
+      isis circuit-type level-1
+      ip router isis underlay
+    router isis underlay
+      net 49.0001.0001.0002.0000.00
+      is-type level-1 
 #### Leaf 1
-    feature ospf
+    feature isis
     interface Ethernet1/1
-      no switchport
-      ip address 10.1.1.1/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
+      isis circuit-type level-1
+      ip router isis underlay
     interface Ethernet1/2
-      no switchport
-      ip address 10.1.2.1/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
-    interface loopback1
-      ip address 10.0.101.1/32
-      ip router ospf UNDERLAY area 0.0.0.0
-    router ospf UNDERLAY
-      router-id 10.0.101.1
+      isis circuit-type level-1
+      ip router isis underlay
+    router isis underlay
+      net 49.0001.0001.0000.0001.00
+      is-type level-1 
 #### Leaf 2
-    feature ospf
+    feature isis
     interface Ethernet1/1
-      no switchport
-      ip address 10.1.1.3/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
+      isis circuit-type level-1
+      ip router isis underlay
     interface Ethernet1/2
-      no switchport
-      ip address 10.1.2.3/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
-    interface loopback1
-      ip address 10.0.102.1/32
-      ip router ospf UNDERLAY area 0.0.0.0
-    router ospf UNDERLAY
-      router-id 10.0.102.1
+      isis circuit-type level-1
+      ip router isis underlay
+    router isis underlay
+      net 49.0001.0001.0000.0002.00
+      is-type level-1 
 #### Leaf 3
-    feature ospf
+    feature isis
     interface Ethernet1/1
-      no switchport
-      ip address 10.1.1.5/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
+      isis circuit-type level-1
+      ip router isis underlay
     interface Ethernet1/2
-      no switchport
-      ip address 10.1.2.5/31
-      ip ospf network point-to-point
-      ip router ospf UNDERLAY area 0.0.0.0
-      no shutdown
-    interface loopback1
-      ip address 10.0.103.1/32
-      ip router ospf UNDERLAY area 0.0.0.0
-    router ospf UNDERLAY
-      router-id 10.0.103.1
+      isis circuit-type level-1
+      ip router isis underlay
+    router isis underlay
+      net 49.0001.0001.0000.0003.00
+      is-type level-1 
