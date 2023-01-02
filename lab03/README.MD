@@ -2,9 +2,9 @@
 ## eBGP underlay
 ![Схема сети](net.png "Схема сети")
 ### Схема eBGP
-    AS 65000 - Spines<br>
-    AS 65001 - Leaf1<br>
-    AS 65002 - Leaf2<br>
+    AS 65000 - Spines
+    AS 65001 - Leaf1
+    AS 65002 - Leaf2
     AS 65003 - Leaf3
 ### Конфигурация
 #### Spine 1
