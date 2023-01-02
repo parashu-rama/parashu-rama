@@ -27,19 +27,24 @@ AS 65003 - Leaf3
         timers 3 9
         address-family ipv4 unicast
 #### Spine 2
-    feature isis
-    interface Ethernet1/1
-      isis circuit-type level-1
-      ip router isis underlay
-    interface Ethernet1/2
-      isis circuit-type level-1
-      ip router isis underlay
-    interface Ethernet1/3
-      isis circuit-type level-1
-      ip router isis underlay
-    router isis underlay
-      net 49.0001.0001.0002.0000.00
-      is-type level-1 
+    feature bgp
+    router bgp 65000
+      router-id 10.0.2.1
+      bestpath as-path multipath-relax
+      address-family ipv4 unicast
+        maximum-paths 64
+      neighbor 10.1.2.1
+        remote-as 65001
+        timers 3 9
+        address-family ipv4 unicast
+      neighbor 10.1.2.3
+        remote-as 65002
+        timers 3 9
+        address-family ipv4 unicast
+      neighbor 10.1.2.5
+        remote-as 65003
+        timers 3 9
+        address-family ipv4 unicast
 #### Leaf 1
     feature isis
     interface Ethernet1/1
