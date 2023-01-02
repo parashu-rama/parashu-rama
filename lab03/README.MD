@@ -8,7 +8,6 @@ AS 65002 - Leaf2<br>
 AS 65003 - Leaf3
 ### Конфигурация
 #### Spine 1
-    feature bgp
     router bgp 65000
       router-id 10.0.1.1
       bestpath as-path multipath-relax
@@ -46,35 +45,53 @@ AS 65003 - Leaf3
         timers 3 9
         address-family ipv4 unicast
 #### Leaf 1
-    feature isis
-    interface Ethernet1/1
-      isis circuit-type level-1
-      ip router isis underlay
-    interface Ethernet1/2
-      isis circuit-type level-1
-      ip router isis underlay
-    router isis underlay
-      net 49.0001.0001.0000.0001.00
-      is-type level-1 
+    feature bgp
+    router bgp 65001
+      router-id 10.0.101.1
+      bestpath as-path multipath-relax
+      reconnect-interval 12
+      address-family ipv4 unicast
+        redistribute direct route-map REDISTRIBUTE_CONNECTED
+        maximum-paths 64
+      template peer Spines
+        remote-as 65000
+        timers 3 9
+        address-family ipv4 unicast
+      neighbor 10.1.1.0
+        inherit peer Spines
+      neighbor 10.1.2.0
+        inherit peer Spines
 #### Leaf 2
-    feature isis
-    interface Ethernet1/1
-      isis circuit-type level-1
-      ip router isis underlay
-    interface Ethernet1/2
-      isis circuit-type level-1
-      ip router isis underlay
-    router isis underlay
-      net 49.0001.0001.0000.0002.00
-      is-type level-1 
+    feature bgp
+    router bgp 65002
+      router-id 10.0.102.1
+      bestpath as-path multipath-relax
+      reconnect-interval 12
+      address-family ipv4 unicast
+        redistribute direct route-map REDISTRIBUTE_CONNECTED
+        maximum-paths 64
+      template peer Spines
+        remote-as 65000
+        timers 3 9
+        address-family ipv4 unicast
+      neighbor 10.1.1.2
+        inherit peer Spines
+      neighbor 10.1.2.2
+        inherit peer Spines
 #### Leaf 3
-    feature isis
-    interface Ethernet1/1
-      isis circuit-type level-1
-      ip router isis underlay
-    interface Ethernet1/2
-      isis circuit-type level-1
-      ip router isis underlay
-    router isis underlay
-      net 49.0001.0001.0000.0003.00
-      is-type level-1 
+    feature bgp
+    router bgp 65003
+      router-id 10.0.103.1
+      bestpath as-path multipath-relax
+      reconnect-interval 12
+      address-family ipv4 unicast
+        redistribute direct route-map REDISTRIBUTE_CONNECTED
+        maximum-paths 64
+      template peer Spines
+        remote-as 65000
+        timers 3 9
+        address-family ipv4 unicast
+      neighbor 10.1.1.4
+        inherit peer Spines
+      neighbor 10.1.2.4
+        inherit peer Spines
