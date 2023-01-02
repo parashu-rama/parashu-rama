@@ -8,23 +8,24 @@ AS 65002 - Leaf2<br>
 AS 65003 - Leaf3
 ### Конфигурация
 #### Spine 1
-  router bgp 65000
-  router-id 10.0.1.1
-  bestpath as-path multipath-relax
-  address-family ipv4 unicast
-    maximum-paths 64
-  neighbor 10.1.1.1
-    remote-as 65001
-    timers 3 9
-    address-family ipv4 unicast
-  neighbor 10.1.1.3
-    remote-as 65002
-    timers 3 9
-    address-family ipv4 unicast
-  neighbor 10.1.1.5
-    remote-as 65003
-    timers 3 9
-    address-family ipv4 unicast
+    feature bgp
+    router bgp 65000
+      router-id 10.0.1.1
+      bestpath as-path multipath-relax
+      address-family ipv4 unicast
+        maximum-paths 64
+      neighbor 10.1.1.1
+        remote-as 65001
+        timers 3 9
+        address-family ipv4 unicast
+      neighbor 10.1.1.3
+        remote-as 65002
+        timers 3 9
+        address-family ipv4 unicast
+      neighbor 10.1.1.5
+        remote-as 65003
+        timers 3 9
+        address-family ipv4 unicast
 #### Spine 2
     feature isis
     interface Ethernet1/1
