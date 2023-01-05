@@ -95,7 +95,6 @@
  #### Leaf 1
     nv overlay evpn
     feature bgp
-    feature pim
     feature fabric forwarding
     feature interface-vlan
     feature vn-segment-vlan-based
@@ -173,7 +172,6 @@
  #### Leaf 2
     nv overlay evpn
     feature bgp
-    feature pim
     feature fabric forwarding
     feature interface-vlan
     feature vn-segment-vlan-based
@@ -254,7 +252,6 @@
  #### Leaf 3
     nv overlay evpn
     feature bgp
-    feature pim
     feature fabric forwarding
     feature interface-vlan
     feature vn-segment-vlan-based
