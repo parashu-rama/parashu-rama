@@ -300,7 +300,6 @@
       no shutdown
       host-reachability protocol bgp
       source-interface loopback2
-      global mcast-group 239.0.0.1 L2
       member vni 10010
       member vni 10020
       member vni 900001 associate-vrf
