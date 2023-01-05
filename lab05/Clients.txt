@@ -1,0 +1,8 @@
+set pcname Client1
+ip 10.2.10.11 10.2.10.1 24
+set pcname Client2
+ip 10.2.20.12 10.2.20.1 24
+set pcname Client3
+ip 10.2.10.13 10.2.10.1 24
+set pcname Client4
+ip 10.2.20.14 10.2.20.1 24
