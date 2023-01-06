@@ -12,8 +12,8 @@
 #### IP Адресация
     10.Dn.Sn.X/31, где:
     * Dn – номер ЦОДа,
-    * Sn – 1-100 spine, 101-255 leaf
-    * X – 1-2 для loopback, для p2p по порядку
+    * Sn – 0 для vPC secondary ip, 1-100 spine, 101-255 leaf,
+    * X – 1-2 для loopback, для p2p по порядку, для vPC secondary ip но номеру домена.
 ### Конфигурация
 #### Spine 1
     router bgp 4200000000
@@ -108,11 +108,13 @@
     
     vlan 10
       vn-segment 10010 
+    vlan 20
+      vn-segment 10020      
     vlan 101
       vn-segment 900001
       
     route-map HOST-SVI permit 10
-      match interface Vlan10 
+      match interface Vlan10 Vlan20
     route-map LOOPBACK permit 10
       match interface loopback1 loopback2 
     route-map NEXT-HOP-UNCH permit 10
@@ -122,11 +124,26 @@
       vni 900001
       rd auto
       
+    vpc domain 1
+      peer-switch
+      peer-keepalive destination 10.0.0.2 source 10.0.0.1
+      peer-gateway
+      auto-recovery
+      ip arp synchronize
+  
     interface Vlan10
       no shutdown
       vrf member vxlan-900001
       ip address 10.2.10.1/24
       fabric forwarding mode anycast-gateway
+      
+    interface Vlan20
+      no shutdown
+      vrf member vxlan-900001
+      no ip redirects
+      ip address 10.2.20.1/24
+      no ipv6 redirects
+      fabric forwarding mode anycast-gateway  
       
     interface Vlan101
       no shutdown
@@ -136,12 +153,34 @@
       ipv6 address use-link-local-only
       no ipv6 redirects
       
+    interface port-channel1
+      switchport mode trunk
+      spanning-tree port type network
+      vpc peer-link
+
+    interface port-channel4
+      switchport mode trunk
+      vpc 4      
+      
     interface nve1
       no shutdown
       host-reachability protocol bgp
       source-interface loopback2
       member vni 10010
+      member vni 10020
       member vni 900001 associate-vrf
+      
+    interface mgmt0
+      vrf member management
+      ip address 10.0.0.1/30
+
+    interface loopback1
+      ip address 10.0.101.1/32
+      ip pim sparse-mode
+
+    interface loopback2
+      ip address 10.0.101.2/32
+      ip address 10.0.0.1/32 secondary      
       
     router bgp 4200000001
       router-id 10.0.101.1
