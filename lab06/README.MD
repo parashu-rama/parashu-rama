@@ -103,6 +103,7 @@
     feature fabric forwarding
     feature interface-vlan
     feature vn-segment-vlan-based
+    feature vpc
     feature nv overlay
     fabric forwarding anycast-gateway-mac 0000.2222.3333
     
@@ -220,6 +221,7 @@
     feature fabric forwarding
     feature interface-vlan
     feature vn-segment-vlan-based
+    feature vpc
     feature nv overlay
     fabric forwarding anycast-gateway-mac 0000.2222.3333
     
@@ -423,3 +425,28 @@
       vrf vxlan-900001
         address-family ipv4 unicast
           redistribute direct route-map HOST-SVI
+#### Client 5
+    ip route 0.0.0.0/0 10.2.10.1
+
+    vrf context Vlan20
+      ip route 0.0.0.0/0 10.2.20.1
+
+    interface Vlan10
+      no shutdown
+      ip address 10.2.10.15/24
+
+    interface Vlan20
+      no shutdown
+      vrf member Vlan20
+      ip address 10.2.20.15/24
+
+    interface port-channel1
+      switchport mode trunk
+
+    interface Ethernet1/1
+      switchport mode trunk
+      channel-group 1
+
+    interface Ethernet1/2
+      switchport mode trunk
+      channel-group 1 
