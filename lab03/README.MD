@@ -6,8 +6,6 @@
     AS 4200000001 - Leaf1
     AS 4200000002 - Leaf2
     AS 4200000003 - Leaf3
-### Нумерация VNI
-    1xxxx - где xxxx - номер Vlan
 ### Конфигурация
 #### Spine 1
     router bgp 4200000000
