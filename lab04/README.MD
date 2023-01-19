@@ -8,6 +8,10 @@
     AS 4200000003 - Leaf3
 ### Нумерация VNI
     1xxxx - где xxxx - номер Vlan
+### Коментарии к настройке
+    disable-peer-as-check - не проверяем peer-as т.к. используем одну AS на Spine и разные на Leaf
+    allowas-in - разрешаем повторение AS, т.к. используем разные AS на Leaf и Spine
+    next-hop unchanged - приоритет directly-connected маршрутов
 ### Конфигурация
 #### Spine 1
     router bgp 4200000000
