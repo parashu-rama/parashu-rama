@@ -91,15 +91,6 @@
         remote-as 4200000003
         update-source Ethernet1/3
  #### Leaf 1
-    nv overlay evpn
-    feature bgp
-    feature fabric forwarding
-    feature interface-vlan
-    feature vn-segment-vlan-based
-    feature vpc
-    feature nv overlay
-    fabric forwarding anycast-gateway-mac 0000.2222.3333
-    
     vlan 10
       vn-segment 20010
     vlan 20
@@ -156,7 +147,6 @@
       no shutdown
       host-reachability protocol bgp
       source-interface loopback2
-      global mcast-group 239.0.0.1 L2
       member vni 20010
       member vni 20210 associate-vrf
       member vni 30020
@@ -192,43 +182,31 @@
       vrf 10.3
         address-family ipv4 unicast
  #### Leaf 2
-    nv overlay evpn
-    feature bgp
-    feature fabric forwarding
-    feature interface-vlan
-    feature vn-segment-vlan-based
-    feature vpc
-    feature nv overlay
-    fabric forwarding anycast-gateway-mac 0000.2222.3333
-    
     vlan 10
-      vn-segment 10010    
+      vn-segment 20010
     vlan 20
-      vn-segment 10020
-    vlan 101
-      vn-segment 900001
+      vn-segment 30020
+    vlan 210
+      vn-segment 20210
+    vlan 320
+      vn-segment 30320  
       
-    route-map HOST-SVI permit 10
-      match interface Vlan10 Vlan20
-    route-map LOOPBACK permit 10
-      match interface loopback1 loopback2
-    route-map NEXT-HOP-UNCH permit 10
-      set ip next-hop unchanged
-      
-    vrf context vxlan-900001
-      vni 900001
+    vrf context 10.2
+      vni 20210
       rd auto
-      
-    vpc domain 1
-      peer-switch
-      peer-keepalive destination 10.0.0.1 source 10.0.0.2
-      peer-gateway
-      auto-recovery
-      ip arp synchronize    
-      
+      address-family ipv4 unicast
+        route-target both auto
+        route-target both auto evpn
+    vrf context 10.3
+      vni 30320
+      rd auto
+      address-family ipv4 unicast
+        route-target both auto
+        route-target both auto evpn      
+
     interface Vlan10
       no shutdown
-      vrf member vxlan-900001
+      vrf member 10.2
       no ip redirects
       ip address 10.2.10.1/24
       no ipv6 redirects
@@ -236,443 +214,224 @@
 
     interface Vlan20
       no shutdown
-      vrf member vxlan-900001
+      vrf member 10.3
       no ip redirects
-      ip address 10.2.20.1/24
+      ip address 10.3.20.1/24
       no ipv6 redirects
       fabric forwarding mode anycast-gateway
-      
-    interface Vlan101
+
+    interface Vlan210
       no shutdown
-      vrf member vxlan-900001
+      vrf member 10.2
       no ip redirects
       ip forward
-      ipv6 address use-link-local-only
+      no ipv6 redirects
+
+    interface Vlan320
+      no shutdown
+      vrf member 10.3
+      no ip redirects
+      ip forward
       no ipv6 redirects
       
-    interface port-channel1
-      switchport mode trunk
-      spanning-tree port type network
-      vpc peer-link
-
-    interface port-channel4
-      switchport mode trunk
-      vpc 4      
-  
     interface nve1
       no shutdown
       host-reachability protocol bgp
       source-interface loopback2
-      member vni 10010
-      member vni 10020
-      member vni 900001 associate-vrf
-      
-    interface mgmt0
-      vrf member management
-      ip address 10.0.0.2/30
-
-    interface loopback1
-      ip address 10.0.102.1/32
-
-    interface loopback2
-      ip address 10.0.102.2/32
-      ip address 10.0.0.1/32 secondary    
+      global mcast-group 239.0.0.1 L2
+      member vni 20010
+      member vni 20210 associate-vrf
+      member vni 30020
+      member vni 30320 associate-vrf
   
-    router bgp 4200000002
-      router-id 10.0.102.1
-      address-family ipv4 unicast
-        redistribute direct route-map LOOPBACK
-      address-family l2vpn evpn
-        nexthop route-map NEXT-HOP-UNCH
-        retain route-target all
-      template peer OSPINE
-        remote-as 4200000000
-        update-source loopback1
-        ebgp-multihop 3
-        address-family l2vpn evpn
-          disable-peer-as-check
-          send-community
-          send-community extended
-          route-map NEXT-HOP-UNCH out
-      template peer USPINE
-        remote-as 4200000000
-        address-family ipv4 unicast
-          allowas-in 3
-          disable-peer-as-check
-      neighbor 10.0.1.1
-        inherit peer OSPINE
-      neighbor 10.0.2.1
-        inherit peer OSPINE
-      neighbor 10.1.1.2
-        inherit peer USPINE
-        update-source Ethernet1/1
-      neighbor 10.1.2.2
-        inherit peer USPINE
-        update-source Ethernet1/2
-      vrf vxlan-900001
-        address-family ipv4 unicast
-          redistribute direct route-map HOST-SVI
- #### Leaf 3
-    nv overlay evpn
-    feature bgp
-    feature fabric forwarding
-    feature interface-vlan
-    feature vn-segment-vlan-based
-    feature nv overlay
-    fabric forwarding anycast-gateway-mac 0000.2222.3333
-    
+router bgp 4200000002
+  router-id 10.0.102.1
+  address-family ipv4 unicast
+    redistribute direct route-map LOOPBACK
+  address-family l2vpn evpn
+    nexthop route-map NEXT-HOP-UNCH
+    retain route-target all
+  template peer OSPINE
+    remote-as 4200000000
+    update-source loopback1
+    ebgp-multihop 3
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+      route-map NEXT-HOP-UNCH out
+  template peer USPINE
+    remote-as 4200000000
+    address-family ipv4 unicast
+  neighbor 10.0.1.1
+    inherit peer OSPINE
+  neighbor 10.0.2.1
+    inherit peer OSPINE
+  neighbor 10.1.1.2
+    inherit peer USPINE
+    update-source Ethernet1/1
+  neighbor 10.1.2.2
+    inherit peer USPINE
+    update-source Ethernet1/2
+  vrf 10.2
+    address-family ipv4 unicast
+  vrf 10.3
+    address-family ipv4 unicast
+ #### Border Leaf 3
     vlan 10
-      vn-segment 10010
+      vn-segment 20010
     vlan 20
-      vn-segment 10020
-    vlan 101
-      vn-segment 900001
-
-    route-map HOST-SVI permit 10
-      match interface Vlan10 Vlan20
-    route-map LOOPBACK permit 10
-      match interface loopback1 loopback2
-    route-map NEXT-HOP-UNCH permit 10
-      set ip next-hop unchanged
-
-    vrf context vxlan-900001
-      vni 900001
-      rd auto
+      vn-segment 30020
+    vlan 210
+      vn-segment 20210
+    vlan 320
+      vn-segment 30320
 
     interface Vlan10
       no shutdown
-      vrf member vxlan-900001
+      vrf member 10.2
       ip address 10.2.10.1/24
       fabric forwarding mode anycast-gateway
 
     interface Vlan20
       no shutdown
-      vrf member vxlan-900001
-      ip address 10.2.20.1/24
+      vrf member 10.3
+      ip address 10.3.20.1/24
       fabric forwarding mode anycast-gateway
 
-    interface Vlan101
+    interface Vlan210
       no shutdown
-      vrf member vxlan-900001
-      no ip redirects
+      vrf member 10.2
       ip forward
-      ipv6 address use-link-local-only
-      no ipv6 redirects
-      
+
+    interface Vlan320
+      no shutdown
+      vrf member 10.3
+      ip forward
+
     interface nve1
       no shutdown
       host-reachability protocol bgp
       source-interface loopback2
-      member vni 10010
-      member vni 10020
-      member vni 900001 associate-vrf
+      global mcast-group 239.0.0.1 L2
+      member vni 20010
+      member vni 20210 associate-vrf
+      member vni 30020
+      member vni 30320 associate-vrf
       
-    router bgp 4200000003
-      router-id 10.0.103.1
+    interface Ethernet1/5.110
+      encapsulation dot1q 110
+      vrf member 10.2
+      ip address 10.1.3.1/31
+      no shutdown
+
+    interface Ethernet1/5.120
+      encapsulation dot1q 120
+      vrf member 10.3
+      ip address 10.1.3.3/31
+      no shutdown      
+      
+router bgp 4200000003
+  router-id 10.1.3.1
+  address-family ipv4 unicast
+    redistribute direct route-map LOOPBACK
+  address-family l2vpn evpn
+    nexthop route-map NEXT-HOP-UNCH
+    retain route-target all
+  template peer OSPINE
+    remote-as 4200000000
+    update-source loopback1
+    ebgp-multihop 3
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+      route-map NEXT-HOP-UNCH out
+  template peer USPINE
+    remote-as 4200000000
+    address-family ipv4 unicast
+  neighbor 10.0.1.1
+    inherit peer OSPINE
+  neighbor 10.0.2.1
+    inherit peer OSPINE
+  neighbor 10.1.1.4
+    inherit peer USPINE
+    update-source Ethernet1/1
+  neighbor 10.1.2.4
+    inherit peer USPINE
+    update-source Ethernet1/2
+  vrf 10.2
+    address-family ipv4 unicast
+      aggregate-address 10.2.0.0/16 summary-only
+    neighbor 10.1.3.0
+      remote-as 65000.65000
+      local-as 65000.10 no-prepend replace-as
       address-family ipv4 unicast
-        redistribute direct route-map LOOPBACK
-      address-family l2vpn evpn
-        nexthop route-map NEXT-HOP-UNCH
-        retain route-target all
-      template peer OSPINE
-        remote-as 4200000000
-        update-source loopback1
-        ebgp-multihop 3
-        address-family l2vpn evpn
-          disable-peer-as-check
-          send-community
-          send-community extended
-          route-map NEXT-HOP-UNCH out
-      template peer USPINE
-        remote-as 4200000000
-        address-family ipv4 unicast
-          allowas-in 3
-          disable-peer-as-check
-      neighbor 10.0.1.1
-        inherit peer OSPINE
-      neighbor 10.0.2.1
-        inherit peer OSPINE
-      neighbor 10.1.1.4
-        inherit peer USPINE
-        update-source Ethernet1/1
-      neighbor 10.1.2.4
-        inherit peer USPINE
-        update-source Ethernet1/2
-      vrf vxlan-900001
-        address-family ipv4 unicast
-          redistribute direct route-map HOST-SVI
-#### Client 5
-    ip route 0.0.0.0/0 10.2.10.1
+  vrf 10.3
+    address-family ipv4 unicast
+      aggregate-address 10.3.0.0/16 summary-only
+    neighbor 10.1.3.2
+      remote-as 65000.65000
+      local-as 65000.20 no-prepend replace-as
+      address-family ipv4 unicast
+#### Edge Router
+    interface Ethernet0/0.110
+     encapsulation dot1Q 110
+     ip address 10.1.3.0 255.255.255.254
+    !
+    interface Ethernet0/0.120
+     encapsulation dot1Q 120
+     ip address 10.1.3.2 255.255.255.254
+    !
+    interface Ethernet0/1
+     no ip address
+     shutdown
+    !
+    interface Ethernet0/2
+     no ip address
+     shutdown
+    !
+    interface Ethernet0/3
+     no ip address
+     shutdown
+    !
+    router bgp 4259905000
+     bgp log-neighbor-changes
+     neighbor 10.1.3.1 remote-as 4259840010
+     neighbor 10.1.3.3 remote-as 4259840020
+#### Проверка route-type 5
+    Leaf1# sh bgp l2vpn evpn route-type 5 vrf 10.2
+    Route Distinguisher: 10.0.101.1:6    (L3VNI 20210)
+    BGP routing table entry for [5]:[0]:[0]:[16]:[10.2.0.0]/224, version 3491
+    Paths: (1 available, best #1)
+    Flags: (0x000002) (high32 00000000) on xmit-list, is not in l2rib/evpn, is not i
+    n HW
 
-    vrf context Vlan20
-      ip route 0.0.0.0/0 10.2.20.1
+      Advertised path-id 1
+      Path type: external, path is valid, is best path, no labeled nexthop
+                 Imported from 10.1.3.1:3:[5]:[0]:[0]:[16]:[10.2.0.0]/224
+      Gateway IP: 0.0.0.0
+      AS-Path: 4200000000 4200000003 , path sourced external to AS
+        10.0.103.2 (metric 0) from 10.0.1.1 (10.0.1.1)
+          Origin IGP, MED not set, localpref 100, weight 0
+          Aggregated by 10.2.10.1, aggregator AS 4200000003, atomic-aggregate set
+          Received label 20210
+          Extcommunity: RT:23456:20210 ENCAP:8 Router MAC:5005.0000.1b08
 
-    interface Vlan10
-      no shutdown
-      ip address 10.2.10.15/24
+      Path-id 1 not advertised to any peer
+    BGP routing table entry for [5]:[0]:[0]:[16]:[10.3.0.0]/224, version 3510
+    Paths: (1 available, best #1)
+    Flags: (0x000002) (high32 00000000) on xmit-list, is not in l2rib/evpn, is not i
+    n HW
 
-    interface Vlan20
-      no shutdown
-      vrf member Vlan20
-      ip address 10.2.20.15/24
+      Advertised path-id 1
+      Path type: external, path is valid, is best path, no labeled nexthop
+                 Imported from 10.1.3.1:3:[5]:[0]:[0]:[16]:[10.3.0.0]/224
+      Gateway IP: 0.0.0.0
+      AS-Path: 4200000000 4200000003 4259905000 4259840020 , path sourced external t
+    o AS
+        10.0.103.2 (metric 0) from 10.0.2.1 (10.0.2.1)
+          Origin IGP, MED not set, localpref 100, weight 0
+          Aggregated by 10.3.20.1, aggregator AS 4200000003, atomic-aggregate set
+          Received label 20210
+          Extcommunity: RT:23456:20210 ENCAP:8 Router MAC:5005.0000.1b08
 
-    interface port-channel1
-      switchport mode trunk
-
-    interface Ethernet1/1
-      switchport mode trunk
-      channel-group 1
-
-    interface Ethernet1/2
-      switchport mode trunk
-      channel-group 1 
-#### Проверка vPC
-    Leaf1# show vpc
-    Legend:
-                    (*) - local vPC is down, forwarding via vPC peer-link
-
-    vPC domain id                     : 1
-    Peer status                       : peer adjacency formed ok
-    vPC keep-alive status             : peer is alive
-    Configuration consistency status  : success
-    Per-vlan consistency status       : success
-    Type-2 consistency status         : success
-    vPC role                          : primary
-    Number of vPCs configured         : 1
-    Peer Gateway                      : Enabled
-    Dual-active excluded VLANs        : -
-    Graceful Consistency Check        : Enabled
-    Auto-recovery status              : Enabled, timer is off.(timeout = 240s)
-    Delay-restore status              : Timer is off.(timeout = 30s)
-    Delay-restore SVI status          : Timer is off.(timeout = 10s)
-    Operational Layer3 Peer-router    : Disabled
-    Virtual-peerlink mode             : Disabled
-
-    vPC Peer-link status
-    ---------------------------------------------------------------------
-    id    Port   Status Active vlans
-    --    ----   ------ -------------------------------------------------
-    1     Po1    up     1,10,20,101
-
-
-    vPC status
-    ----------------------------------------------------------------------------
-    Id    Port          Status Consistency Reason                Active vlans
-    --    ------------  ------ ----------- ------                ---------------
-    4     Po4           up     success     success               1,10,20,101
-
-
-
-
-    Please check "show vpc consistency-parameters vpc <vpc-num>" for the
-    consistency reason of down vpc and for type-2 consistency reasons for
-    any vpc.
-#### Проверка доступности
-    Leaf3# show bgp l2vpn evpn
-    BGP routing table information for VRF default, address family L2VPN EVPN
-    BGP table version is 1200, Local Router ID is 10.0.103.1
-    Status: s-suppressed, x-deleted, S-stale, d-dampened, h-history, *-valid, >-best
-    Path type: i-internal, e-external, c-confed, l-local, a-aggregate, r-redist, I-i
-    njected
-    Origin codes: i - IGP, e - EGP, ? - incomplete, | - multipath, & - backup, 2 - b
-    est2
-
-       Network            Next Hop            Metric     LocPrf     Weight Path
-    Route Distinguisher: 10.0.101.1:3
-    *>e[5]:[0]:[0]:[24]:[10.2.10.0]/224
-                          10.0.0.1                                       0 420000000
-    0 4200000001 ?
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000001 ?
-    *>e[5]:[0]:[0]:[24]:[10.2.20.0]/224
-                          10.0.0.1                                       0 420000000
-    0 4200000001 ?
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000001 ?
-
-    Route Distinguisher: 10.0.101.1:32777
-    *>e[2]:[0]:[0]:[48]:[0050.7966.6806]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e[2]:[0]:[0]:[48]:[0050.7966.6806]:[32]:[10.2.10.11]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[32]:[10.2.10.15]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-
-    Route Distinguisher: 10.0.101.1:32787
-    *>e[2]:[0]:[0]:[48]:[0050.7966.6807]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e[2]:[0]:[0]:[48]:[0050.7966.6807]:[32]:[10.2.20.12]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[32]:[10.2.20.15]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-
-    Route Distinguisher: 10.0.102.1:3
-    * e[5]:[0]:[0]:[24]:[10.2.10.0]/224
-                          10.0.0.1                                       0 420000000
-    0 4200000002 ?
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 ?
-    * e[5]:[0]:[0]:[24]:[10.2.20.0]/224
-                          10.0.0.1                                       0 420000000
-    0 4200000002 ?
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 ?
-
-    Route Distinguisher: 10.0.102.1:32777
-    * e[2]:[0]:[0]:[48]:[0050.7966.6806]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e[2]:[0]:[0]:[48]:[0050.7966.6806]:[32]:[10.2.10.11]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[32]:[10.2.10.15]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-
-    Route Distinguisher: 10.0.102.1:32787
-    * e[2]:[0]:[0]:[48]:[0050.7966.6807]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e[2]:[0]:[0]:[48]:[0050.7966.6807]:[32]:[10.2.20.12]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[32]:[10.2.20.15]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-
-    Route Distinguisher: 10.0.103.1:32777    (L2VNI 10010)
-    * e[2]:[0]:[0]:[48]:[0050.7966.6806]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>l[2]:[0]:[0]:[48]:[0050.7966.6808]:[0]:[0.0.0.0]/216
-                          10.0.103.2                        100      32768 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e[2]:[0]:[0]:[48]:[0050.7966.6806]:[32]:[10.2.10.11]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>l[2]:[0]:[0]:[48]:[0050.7966.6808]:[32]:[10.2.10.13]/272
-                          10.0.103.2                        100      32768 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[32]:[10.2.10.15]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-
-    Route Distinguisher: 10.0.103.1:32787    (L2VNI 10020)
-    * e[2]:[0]:[0]:[48]:[0050.7966.6807]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>l[2]:[0]:[0]:[48]:[0050.7966.6809]:[0]:[0.0.0.0]/216
-                          10.0.103.2                        100      32768 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[0]:[0.0.0.0]/216
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e[2]:[0]:[0]:[48]:[0050.7966.6807]:[32]:[10.2.20.12]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>l[2]:[0]:[0]:[48]:[0050.7966.6809]:[32]:[10.2.20.14]/272
-                          10.0.103.2                        100      32768 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[32]:[10.2.20.15]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-
-    Route Distinguisher: 10.0.103.1:3    (L3VNI 900001)
-    * e[2]:[0]:[0]:[48]:[0050.7966.6806]:[32]:[10.2.10.11]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e[2]:[0]:[0]:[48]:[0050.7966.6807]:[32]:[10.2.20.12]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[32]:[10.2.10.15]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000002 i
-    * e[2]:[0]:[0]:[48]:[500a.0000.1b08]:[32]:[10.2.20.15]/272
-                          10.0.0.1                                       0 420000000
-    0 4200000002 i
-    *>e                   10.0.0.1                                       0 420000000
-    0 4200000001 i
-    *>l[5]:[0]:[0]:[24]:[10.2.10.0]/224
-                          10.0.103.2               0        100      32768 ?
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000002 ?
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000001 ?
-    *>l[5]:[0]:[0]:[24]:[10.2.20.0]/224
-                          10.0.103.2               0        100      32768 ?
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000002 ?
-    * e                   10.0.0.1                                       0 420000000
-    0 4200000001 ?
-
+      Path-id 1 not advertised to any peer
