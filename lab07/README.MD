@@ -238,44 +238,43 @@
       no shutdown
       host-reachability protocol bgp
       source-interface loopback2
-      global mcast-group 239.0.0.1 L2
       member vni 20010
       member vni 20210 associate-vrf
       member vni 30020
       member vni 30320 associate-vrf
   
-router bgp 4200000002
-  router-id 10.0.102.1
-  address-family ipv4 unicast
-    redistribute direct route-map LOOPBACK
-  address-family l2vpn evpn
-    nexthop route-map NEXT-HOP-UNCH
-    retain route-target all
-  template peer OSPINE
-    remote-as 4200000000
-    update-source loopback1
-    ebgp-multihop 3
-    address-family l2vpn evpn
-      send-community
-      send-community extended
-      route-map NEXT-HOP-UNCH out
-  template peer USPINE
-    remote-as 4200000000
-    address-family ipv4 unicast
-  neighbor 10.0.1.1
-    inherit peer OSPINE
-  neighbor 10.0.2.1
-    inherit peer OSPINE
-  neighbor 10.1.1.2
-    inherit peer USPINE
-    update-source Ethernet1/1
-  neighbor 10.1.2.2
-    inherit peer USPINE
-    update-source Ethernet1/2
-  vrf 10.2
-    address-family ipv4 unicast
-  vrf 10.3
-    address-family ipv4 unicast
+    router bgp 4200000002
+      router-id 10.0.102.1
+      address-family ipv4 unicast
+        redistribute direct route-map LOOPBACK
+      address-family l2vpn evpn
+        nexthop route-map NEXT-HOP-UNCH
+        retain route-target all
+      template peer OSPINE
+        remote-as 4200000000
+        update-source loopback1
+        ebgp-multihop 3
+        address-family l2vpn evpn
+          send-community
+          send-community extended
+          route-map NEXT-HOP-UNCH out
+      template peer USPINE
+        remote-as 4200000000
+        address-family ipv4 unicast
+      neighbor 10.0.1.1
+        inherit peer OSPINE
+      neighbor 10.0.2.1
+        inherit peer OSPINE
+      neighbor 10.1.1.2
+        inherit peer USPINE
+        update-source Ethernet1/1
+      neighbor 10.1.2.2
+        inherit peer USPINE
+        update-source Ethernet1/2
+      vrf 10.2
+        address-family ipv4 unicast
+      vrf 10.3
+        address-family ipv4 unicast
  #### Border Leaf 3
     vlan 10
       vn-segment 20010
@@ -312,7 +311,6 @@ router bgp 4200000002
       no shutdown
       host-reachability protocol bgp
       source-interface loopback2
-      global mcast-group 239.0.0.1 L2
       member vni 20010
       member vni 20210 associate-vrf
       member vni 30020
@@ -330,48 +328,48 @@ router bgp 4200000002
       ip address 10.1.3.3/31
       no shutdown      
       
-router bgp 4200000003
-  router-id 10.1.3.1
-  address-family ipv4 unicast
-    redistribute direct route-map LOOPBACK
-  address-family l2vpn evpn
-    nexthop route-map NEXT-HOP-UNCH
-    retain route-target all
-  template peer OSPINE
-    remote-as 4200000000
-    update-source loopback1
-    ebgp-multihop 3
-    address-family l2vpn evpn
-      send-community
-      send-community extended
-      route-map NEXT-HOP-UNCH out
-  template peer USPINE
-    remote-as 4200000000
-    address-family ipv4 unicast
-  neighbor 10.0.1.1
-    inherit peer OSPINE
-  neighbor 10.0.2.1
-    inherit peer OSPINE
-  neighbor 10.1.1.4
-    inherit peer USPINE
-    update-source Ethernet1/1
-  neighbor 10.1.2.4
-    inherit peer USPINE
-    update-source Ethernet1/2
-  vrf 10.2
-    address-family ipv4 unicast
-      aggregate-address 10.2.0.0/16 summary-only
-    neighbor 10.1.3.0
-      remote-as 65000.65000
-      local-as 65000.10 no-prepend replace-as
+    router bgp 4200000003
+      router-id 10.1.3.1
       address-family ipv4 unicast
-  vrf 10.3
-    address-family ipv4 unicast
-      aggregate-address 10.3.0.0/16 summary-only
-    neighbor 10.1.3.2
-      remote-as 65000.65000
-      local-as 65000.20 no-prepend replace-as
-      address-family ipv4 unicast
+        redistribute direct route-map LOOPBACK
+      address-family l2vpn evpn
+        nexthop route-map NEXT-HOP-UNCH
+        retain route-target all
+      template peer OSPINE
+        remote-as 4200000000
+        update-source loopback1
+        ebgp-multihop 3
+        address-family l2vpn evpn
+          send-community
+          send-community extended
+          route-map NEXT-HOP-UNCH out
+      template peer USPINE
+        remote-as 4200000000
+        address-family ipv4 unicast
+      neighbor 10.0.1.1
+        inherit peer OSPINE
+      neighbor 10.0.2.1
+        inherit peer OSPINE
+      neighbor 10.1.1.4
+        inherit peer USPINE
+        update-source Ethernet1/1
+      neighbor 10.1.2.4
+        inherit peer USPINE
+        update-source Ethernet1/2
+      vrf 10.2
+        address-family ipv4 unicast
+          aggregate-address 10.2.0.0/16 summary-only
+        neighbor 10.1.3.0
+          remote-as 65000.65000
+          local-as 65000.10 no-prepend replace-as
+          address-family ipv4 unicast
+      vrf 10.3
+        address-family ipv4 unicast
+          aggregate-address 10.3.0.0/16 summary-only
+        neighbor 10.1.3.2
+          remote-as 65000.65000
+          local-as 65000.20 no-prepend replace-as
+          address-family ipv4 unicast
 #### Edge Router
     interface Ethernet0/0.110
      encapsulation dot1Q 110
