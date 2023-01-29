@@ -16,6 +16,10 @@
     * Dn – номер ЦОДа,
     * Sn – 0 для vPC secondary ip, 1-100 spine, 101-255 leaf,
     * X – 1-2 для loopback, для p2p по порядку, для vPC secondary ip но номеру домена.
+#### Dn для DC1 = 0 – 3, где 
+    * 0 - loopback
+    * 1 – p2p links
+    * 2-3 - services    
 ### Конфигурация
 #### Spine 1
     router bgp 4200000000
