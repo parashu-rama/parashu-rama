@@ -379,18 +379,6 @@
      encapsulation dot1Q 120
      ip address 10.1.3.2 255.255.255.254
     !
-    interface Ethernet0/1
-     no ip address
-     shutdown
-    !
-    interface Ethernet0/2
-     no ip address
-     shutdown
-    !
-    interface Ethernet0/3
-     no ip address
-     shutdown
-    !
     router bgp 4259905000
      bgp log-neighbor-changes
      neighbor 10.1.3.1 remote-as 4259840010
