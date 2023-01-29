@@ -9,8 +9,6 @@
     AS 65000.10 - Vrf 10.2
     AS 65000.20 - Vrf 10.3
     AS 65000.65000 - Edge Router
-### Нумерация VNI
-    Yxxxx  - где xxxx - номер Vlan, 10.Y - номер VRF
 ### IP Адресация
     10.Dn.Sn.X/31, где:
     * Dn – номер ЦОДа,
@@ -19,7 +17,9 @@
 #### Dn для DC1 = 0 – 3, где 
     * 0 - loopback
     * 1 – p2p links
-    * 2-3 - services    
+    * 2-3 - services 
+#### Нумерация VNI
+    Dnxxxx  - где xxxx - номер Vlan, 10.Dn - номер VRF    
 ### Конфигурация
 #### Spine 1
     router bgp 4200000000
