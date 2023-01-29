@@ -17,9 +17,13 @@
 #### Dn для DC1 = 0 – 3, где 
     * 0 - loopback
     * 1 – p2p links
-    * 2-3 - services 
+    * 2-3 - клиенты 
+#### Нумерация клиентов
+    10.Dn.0.0/16
 #### Нумерация VNI
-    Dnxxxx  - где xxxx - номер Vlan, 10.Dn - номер VRF    
+    Dnxxxx  - где xxxx - номер Vlan
+#### Именование Vrf
+    10.Dn
 ### Конфигурация
 #### Spine 1
     router bgp 4200000000
