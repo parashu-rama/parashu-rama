@@ -6,6 +6,9 @@
     AS 4200000001 - Leaf1
     AS 4200000002 - Leaf2
     AS 4200000003 - Leaf3
+    AS 65000.10 - Vrf 10.2
+    AS 65000.20 - Vrf 10.3
+    AS 65000.65000 - Edge Router
 ### Нумерация VNI
     Yxxxx  - где xxxx - номер Vlan, Y - номер VRF
 ### IP Адресация
