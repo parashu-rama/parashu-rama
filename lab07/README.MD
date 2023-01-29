@@ -7,9 +7,8 @@
     AS 4200000002 - Leaf2
     AS 4200000003 - Leaf3
 ### Нумерация VNI
-    1xxxx  - где xxxx - номер Vlan
-    900001 - vrf для L3 связанности
-#### IP Адресация
+    Yxxxx  - где xxxx - номер Vlan, Y - номер VRF
+### IP Адресация
     10.Dn.Sn.X/31, где:
     * Dn – номер ЦОДа,
     * Sn – 0 для vPC secondary ip, 1-100 spine, 101-255 leaf,
@@ -27,14 +26,11 @@
         update-source loopback1
         ebgp-multihop 3
         address-family l2vpn evpn
-          disable-peer-as-check
           send-community
           send-community extended
           route-map NEXT-HOP-UNCH out
       template peer ULEAFS
         address-family ipv4 unicast
-          allowas-in 3
-          disable-peer-as-check
       neighbor 10.0.101.1
         inherit peer OLEAFS
         remote-as 4200000001
@@ -68,14 +64,11 @@
         update-source loopback1
         ebgp-multihop 3
         address-family l2vpn evpn
-          disable-peer-as-check
           send-community
           send-community extended
           route-map NEXT-HOP-UNCH out
       template peer ULEAFS
         address-family ipv4 unicast
-          allowas-in 3
-          disable-peer-as-check
       neighbor 10.0.101.1
         inherit peer OLEAFS
         remote-as 4200000001
@@ -108,81 +101,66 @@
     fabric forwarding anycast-gateway-mac 0000.2222.3333
     
     vlan 10
-      vn-segment 10010 
+      vn-segment 20010
     vlan 20
-      vn-segment 10020      
-    vlan 101
-      vn-segment 900001
+      vn-segment 30020
+    vlan 210
+      vn-segment 20210
+    vlan 320
+      vn-segment 30320
       
-    route-map HOST-SVI permit 10
-      match interface Vlan10 Vlan20
-    route-map LOOPBACK permit 10
-      match interface loopback1 loopback2 
-    route-map NEXT-HOP-UNCH permit 10
-      set ip next-hop unchanged
-
-    vrf context vxlan-900001
-      vni 900001
+    vrf context 10.2
+      vni 20210
       rd auto
-      
-    vpc domain 1
-      peer-switch
-      peer-keepalive destination 10.0.0.2 source 10.0.0.1
-      peer-gateway
-      auto-recovery
-      ip arp synchronize
-  
+      address-family ipv4 unicast
+        route-target both auto
+        route-target both auto evpn
+    vrf context 10.3
+      vni 30320
+      rd auto
+      address-family ipv4 unicast
+        route-target both auto
+        route-target both auto evpn    
+    
     interface Vlan10
       no shutdown
-      vrf member vxlan-900001
+      vrf member 10.2
       no ip redirects
       ip address 10.2.10.1/24
       no ipv6 redirects
       fabric forwarding mode anycast-gateway
-      
+
     interface Vlan20
       no shutdown
-      vrf member vxlan-900001
+      vrf member 10.3
       no ip redirects
-      ip address 10.2.20.1/24
+      ip address 10.3.20.1/24
       no ipv6 redirects
-      fabric forwarding mode anycast-gateway  
-      
-    interface Vlan101
+      fabric forwarding mode anycast-gateway
+
+    interface Vlan210
       no shutdown
-      vrf member vxlan-900001
+      vrf member 10.2
       no ip redirects
       ip forward
-      ipv6 address use-link-local-only
       no ipv6 redirects
-      
-    interface port-channel1
-      switchport mode trunk
-      spanning-tree port type network
-      vpc peer-link
 
-    interface port-channel4
-      switchport mode trunk
-      vpc 4      
+    interface Vlan320
+      no shutdown
+      vrf member 10.3
+      no ip redirects
+      ip forward
+      no ipv6 redirects
       
     interface nve1
       no shutdown
       host-reachability protocol bgp
       source-interface loopback2
-      member vni 10010
-      member vni 10020
-      member vni 900001 associate-vrf
-      
-    interface mgmt0
-      vrf member management
-      ip address 10.0.0.1/30
-
-    interface loopback1
-      ip address 10.0.101.1/32
-
-    interface loopback2
-      ip address 10.0.101.2/32
-      ip address 10.0.0.1/32 secondary      
+      global mcast-group 239.0.0.1 L2
+      member vni 20010
+      member vni 20210 associate-vrf
+      member vni 30020
+      member vni 30320 associate-vrf
       
     router bgp 4200000001
       router-id 10.0.101.1
@@ -193,15 +171,12 @@
         update-source loopback1
         ebgp-multihop 3
         address-family l2vpn evpn
-          disable-peer-as-check
           send-community
           send-community extended
           route-map NEXT-HOP-UNCH out
       template peer USPINE
         remote-as 4200000000
         address-family ipv4 unicast
-          allowas-in 3
-          disable-peer-as-check
       neighbor 10.0.1.1
         inherit peer OSPINE
       neighbor 10.0.2.1
@@ -212,9 +187,10 @@
       neighbor 10.1.2.0
         inherit peer USPINE
         update-source Ethernet1/2
-      vrf vxlan-900001
+      vrf 10.2
         address-family ipv4 unicast
-          redistribute direct route-map HOST-SVI
+      vrf 10.3
+        address-family ipv4 unicast
  #### Leaf 2
     nv overlay evpn
     feature bgp
