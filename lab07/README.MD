@@ -10,7 +10,7 @@
     AS 65000.20 - Vrf 10.3
     AS 65000.65000 - Edge Router
 ### Нумерация VNI
-    Yxxxx  - где xxxx - номер Vlan, Y - номер VRF
+    Yxxxx  - где xxxx - номер Vlan, 10.Y - номер VRF
 ### IP Адресация
     10.Dn.Sn.X/31, где:
     * Dn – номер ЦОДа,
